@@ -10,9 +10,6 @@ Some fundamental stuff...
 ## PINN Fundamentals
 Some fundamental stuff
 
-## Assignement
-Description of the assignment
-
 ## References
 Put the references here...
 
