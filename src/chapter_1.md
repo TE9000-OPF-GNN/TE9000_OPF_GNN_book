@@ -13,10 +13,10 @@ It is a study of steady state of a power system and may be used for further anal
 
 It is essential a calculation of the neccessary output variables, given a set of input variables to satisfy Kirchhoff's Current Law.
 The main variables investigater are
-- voltage magnitude
-- voltage angle
+- voltage magnitude (V)
+- voltage angle (\tetha)
 - Active power(P)
-- Reactive power(P)
+- Reactive power(Q)
 
 
 ### Optimal Power Flow (OPF)
