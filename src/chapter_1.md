@@ -6,7 +6,18 @@
 Some introduction 
 
 ## Power Flow Fundamentals 
-Some fundamentals for Power Flow and optimal power flow
+% Some fundamentals for Power Flow and optimal power flow
+Power flow analysis is a method for studying characteristics of a powersystem e.g. to estimate the voltage leves, current flows, loading (and overloading) of components in the powersystem and, as the name indicates, how the power flows in the system. 
+
+It is a study of steady state of a power system and may be used for further analysis with different load scenarios, changes in power flow in case of outage of components etc. 
+
+It is essential a calculation of the neccessary output variables, given a set of input variables to satisfy Kirchhoff's Current Law.
+The main variables investigater are
+- voltage magnitude
+- voltage angle
+- Active power(P)
+- Reactive power(P)
+
 
 ### Optimal Power Flow (OPF)
 General principles
