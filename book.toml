@@ -1,6 +1,6 @@
 [book]
-authors = []
+authors = ["stigsimo"]
 language = "en"
 multilingual = false
 src = "src"
-title = "TE9000_OPF_GNN"
+title = "q"
