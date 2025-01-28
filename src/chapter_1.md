@@ -23,7 +23,7 @@ For power flow studies these variables can be investigated by defining a network
 The nodes may be primary generation nodes or primary load nodes, but nodes may have both generation and load connected.
 Generation loads are normally PV nodes (Active power(P) and voltages(V) are fixed), while load nodes are PQ nodes (Active power (P) and reactive power (Q) are fixed).
 A system also needs a "Slack" node which, as the name indicates, picks up the slack. This node has a fixed voltage angle (equal to 0) and an absolute voltage value that is the reference for other nodes. 
-It is also common to use a Per Unit value for other nodes which is a factor related to the base voltage of the slack node.
+It is also common to use a Per Unit value, denoted PU, for other nodes which is a factor related to the base voltage of the slack node.
 
 To further investigate this, some basic definitions and dependencies must be defined:
 
