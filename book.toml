@@ -6,5 +6,6 @@ src = "src"
 title = "q"
 [output.html]
 mathjax-support = true
+[preprocessor.numeq]
 
 

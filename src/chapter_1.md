@@ -19,8 +19,6 @@ The main variables investigated are:
 - Active power(P)
 - Reactive power(Q)
 
-test
-
 For power flow studies these variables can be investigated by defining a network of nodes and lines, where each node are equivalent of a busbar that can have both power generation and loads connected to it.
 The nodes may be primary generation nodes or primary load nodes, but nodes may have both generation and load connected.
 Generation loads are normally PV nodes (Active power(P) and voltages(V) are fixed), while load nodes are PQ nodes (Active power (P) and reactive power (Q) are fixed).
@@ -32,63 +30,101 @@ To further investigate this, some basic definitions and dependencies must be def
 Voltages:
 The voltages in a line can be calculated as 
 
-$$ \overline{V_2} = \overline{V_1}- \frac{RP+XQ}{V} -j\frac{XP+RQ}{V} \tag{1} $$
+$$ \overline{V_2} = \overline{V_1}- \frac{RP+XQ}{V} -j\frac{XP+RQ}{V} {{numeq}} $$
 
 where R and X are the resistance and reactance of the line, and P and Q are the active and reactive power. (see page 164, eq 8.3)
 or simpler:
-$$ \overline{V_2} = \overline{V_1}- \Delta V_{Re} -j\Delta V_{Im} \tag{2} $$
+$$ \overline{V_2} = \overline{V_1}- \Delta V_{Re} -j\Delta V_{Im} {{numeq}} $$
 As the reactance is normally orders of magnitude larger than resistance, this can be rewritten as the approximation:
-$$ \Delta V_{Re} \approx \frac{XQ}{V_1} \tag{3}$$
-$$ \Delta V_{Im} \approx \frac{XP}{V_1} \tag{4}$$
+$$ \Delta V_{Re} \approx \frac{XQ}{V_1} {{numeq}}$$
+$$ \Delta V_{Im} \approx \frac{XP}{V_1} {{numeq}}$$
 Takeaway: "The difference in voltage magnitude between the ends of the transmission line is mostly linked to the flow of reactive power through that line.
 The difference in phase angle between the ends of a transmission line is mostly linked to the flow of active power through the line"
 To handle calculation of these quantities in networks with many nodes, a node-analysis technique is used.
 This is done by converting voltage sources into current source equivalents and impedances into admittance equivalents.
-$$ \overline I_S = \frac{\overline V_S}{Z_S} \tag{eq5} $$
-$$ Y_x= \frac{1}{Z_x} \tag{eq6} $$
+$$ \overline I_S = \frac{\overline V_S}{Z_S} {{numeq}} $$
+$$ Y_x= \frac{1}{Z_x} {{numeq}} $$
 To obey Kirchhoff's law, the sum of all currents entering a node must be zero.
 For a simple network, this can be written as a sum of all currents flowing out of the node as positive and flowing to the node as negative (or vice versa).
-(see example on page 166 in )
+(see example on page 166 in [1])
 ![[Pasted image 20250128130031.png]]
+
+
 These equations can be re-written as the product of the admittance multiplied by the voltage drop.
-In a very simple network with nodes 0, 1, 2 and 3 (Voltages are equal to \\(\overline V_n\\)
- ) where n is the node number and current $I_a$ flowing from $V_0$ to $V_1$, $I_b$ flowing from $V_0$ to $V_2$, and \\( I_c \\) flowing from \\( V_3\\) to \\( V_0 \\), (opposite direction). Then the node 0 with the following sum:
-$$ \overline I_a+ \overline I_b - \overline I_c = 0 \tag{eq7} $$
+In a very simple network with nodes 0, 1, 2 and 3 (Voltages are equal to \\(\overline V_n\\) ) where n is the node number and current \\(I_a\\) flowing from \\(V_0\\) to \\(V_1\\), \\(I_b\\) flowing from \\(V_0\\) to \\(V_2\\), and \\( I_c \\) flowing from \\( V_3\\) to \\( V_0 \\), (opposite direction). Then the Kirckhoffs law for node 0 will give the following sum:
+$$ \overline I_a+ \overline I_b - \overline I_c = 0 {{numeq}} $$
 can be rewritten as
-$$ Y_a(\overline V_0 - \overline V_1) + Y_b(\overline V_0 - \overline V_2) - Y_c(\overline V_3 - \overline V_0) = 0 \tag{8} $$
+$$ Y_a(\overline V_0 - \overline V_1) + Y_b(\overline V_0 - \overline V_2) - Y_c(\overline V_3 - \overline V_0) = 0 {{numeq}} $$
+where \\(Y_n\\) is the admittance for each node
 These may then be rewritten where each voltage is grouped
-$$ (Y_a + Y_b + Y_c)\overline V_0 - (Y_a)\overline V_1 - (Y_b)\overline V_2 - (Y_c)\overline V_3 = 0 \tag{9} $$
-To go further we need to also write the equations for the nodes $$ V_1 $$, $$ V_2 $$, and $$ V_3 $$ as well.
-If we expand the network with a reference node (voltage = 0) and an unknown current source $$ I_1 $$ and add the current flows $$ I_d $$ from node 1 to reference through $$ Y_d $$, $$ I_e $$ from node 2 to reference through $$ Y_e $$ and $$ I_f $$ from node 3 to reference through $$ Y_f $$ and finally add the current source between reference node and $$ V_3 $$ we have the following equations.
+$$ (Y_a + Y_b + Y_c)\overline V_0 - (Y_a)\overline V_1 - (Y_b)\overline V_2 - (Y_c)\overline V_3 = 0 {{numeq}} $$
+To go further we need to also write the equations for the nodes \\(V_1 \\), \\(V_2\\), and \\( V_3\\) as well.
+If we expand the network with a reference node (voltage = 0) and an unknown current source \\(I_1\\) and add the current flows \\(I_d\\) from node 1 to reference through \\(Y_d\\), \\(I_e\\) from node 2 to reference through \\(Y_e\\) and \\(I_f\\) from node 3 to reference through \\(Y_f\\) and finally add the current source between reference node and \\(V_3\\) we have the following equations.
 For Node 1:
-$$ Y_d(\overline V_1-0)-Y_a(\overline V_0-\overline V_1)=0 \tag{10} $$
+$$ Y_d(\overline V_1-0)-Y_a(\overline V_0-\overline V_1)=0 {{numeq}} $$
 For Node 2:
-$$ Y_e(\overline V_2-0)- Y_b(V_0-V_2)=0 \tag{11} $$
+$$ Y_e(\overline V_2-0)- Y_b(V_0-V_2)=0 {{numeq}} $$
 For Node 3:
-$$ Y_f(\overline V_3-0)+Y_c(\overline V_3 - \overline V_0) = I_1 \tag{12} $$
+$$ Y_f(\overline V_3-0)+Y_c(\overline V_3 - \overline V_0) = I_1 {{numeq}} $$
 For the last Node 3, the sum is equal to I1 since this is an unknown(?) current source at this point.
 When these are rewritten on the same form as (9)
 For (10):
-$$ (-Y_a)\overline V_0 + (Y_a+Y_d)\overline V_1 \tag{13} $$
+$$ (-Y_a)\overline V_0 + (Y_a+Y_d)\overline V_1 {{numeq}} $$
 For (11):
-$$ (-Y_b)\overline V_0 + (Y_e+Y_b)\overline V_2 \tag{14} $$
-for (12)
-$$ (-Y_c)V_0 + (Y_c + Y_f)V_3 \tag{15} $$
+$$ (-Y_b)\overline V_0 + (Y_e+Y_b)\overline V_2 {{numeq}} $$
+for (12):
+$$ (-Y_c)V_0 + (Y_c + Y_f)V_3 {{numeq}} $$
 This can then be written in matrix form
-$$ \begin {bmatrix}
-Y_a+Y_b+Y_c&-Y_a&-Y_b&Yc \
--Y_a&Y_a+Y_d&0&0\
--Yb&0&Y_e+Y_b&0\
--Yc&0&0&Y_c+Y_f\
+
+$$ \begin{bmatrix}
+Y_a + Y_b + Y_c& - Y_a & - Y_b & Yc \\\\
+-Y_a & Y_a + Y_d & 0 & 0 \\\\
+-Yb & 0 & Y_e + Y_b & 0 \\\\
+-Yc & 0 & 0 & Y_c + Y_f
 \end{bmatrix}
 \begin{bmatrix}
-\overline V_0\ \overline V_1\ \overline V_2\ \overline V_3
-\end{bmatrix}
+\overline {V_0} \\\\ \overline {V_1} \\\\ \overline {V_2} \\\\ \overline {V_3}
+\end{bmatrix} =
 \begin{bmatrix}
-0 \ 0 \ 0 \I_1
-\end{bmatrix} $$
+0 \\\\ 0 \\\\ 0 \\\\ I_1
+\end{bmatrix} 
+$$
 
+This matrice is symetrical along the diagonal and the values on the diagonal $(i,i)$ elements are the admittance between the node (represented as columns in the matrix) and the reference node.
+The elements not on the diagonal, the $(i,j)$ elements, are the negative admittances between nodes $i$ and $j$
+This can be written more compact as 
+$$ YV=I{{numeq}}$$ 
+or solved for $V$:
+$$ V=Y^{-1}I {{numeq}}$$
 
+The Y matrix is often refered to as the admittance matrix and grows exponetially with the number of nodes, thus it is not feasible to solve for large networks. However, as most nodes are only connected to few nodes mostly (usually two or three other nodes) most of the elements in the Y matrix will be zero. 
+
+#### Formulating the power flow problem
+As each column in the Y matrix represents a node we can view one column in a nodal analysis.
+If the column (or the node) $k$, in the matrix is concidered then Kirkhoffs law may be expressed as
+$$\overline I_k = \sum_{i=1}^N Y_{ki}\overline V_i {{numeq}}$$
+Here $I_k$ represents the current that generators and loads inject to the node, while the sum represents the power from the node to other nodes. If we multiply this equation with the node voltage $\overline V_k$  we get the complex conjugate power injected at node $k$
+$$ 
+\overline V_k \overline I_k = \overline S_k = \sum_{i=1}^N Y_{ki}\overline V_k \overline V_i {{numeq}}
+$$
+
+To evaluate this further it can be usefull to define the following:
+$$Y_{ki} = G_{ki} + jB_{ki} {{numeq}}$$
+where $G$ and $B$ are just the Real, $[Re]$, and imaginary $[Im]$ part of $Y$
+Further $V_k$ and $V_i$ can be expressed as amplitudes and angles:
+$$\overline V_k = V_k \angle \theta_k {{numeq}}$$ 
+and 
+$$\overline V_i = V_i \angle \theta_i {{numeq}}$$
+
+Using this in $(20)$ it can be rewritten as
+$$\overline S_k = \sum_{i=1}^N (G_{ki} - jB_{ki}) V_k V_i \angle (\theta_k-\theta_i) {{numeq}}$$
+Changing to rectangular coordinates by isolating the $[Re]$ part with $cos$ and $[Im]$ part with $sin$ gives us
+$$\overline S_k = \sum_{i=1}^N (G_{ki} - jB_{ki}) V_k V_i[cos(\theta_k-\theta_i)+jsin(\theta_k-\theta_i)] {{numeq}}$$
+
+This can then be rewritten by expanding and separating the real and imaginary parts so that we get:
+
+$$P_k^{inj}= Re(\overline S_k) = \sum_{i=1}^{N}(V_k V_i[G_{ki}cos(\theta_k-\theta_i)+B_{ki}sin(\theta_k-\theta_i)]){{numeq}}$$
+$$Q_k^{inj}= Im(\overline S_k) = \sum_{i=1}^{N}(V_k V_i[G_{ki}sin(\theta_k-\theta_i)+B_{ki}cos(\theta_k-\theta_i)]){{numeq}}$$
 ### Optimal Power Flow (OPF)
 General principles
 
