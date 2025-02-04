@@ -12,7 +12,9 @@ Some fundamental stuff
 
 ## References
 
-Input from Jordi?
+- [GNN_overview.ipynb](https://github.com/phlippe/uvadlc_notebooks/blob/master/docs/tutorial_notebooks/tutorial7/GNN_overview.ipynb)
+- [Introduction to Graph Neural Networks](https://link.springer.com/book/10.1007/978-3-031-01587-8)
+- [GNN TensorFlow](https://arxiv.org/pdf/2207.03522)
 
 
 ### Proposed references in draft:
