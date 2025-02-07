@@ -6,4 +6,5 @@ src = "src"
 title = "q"
 [output.html]
 mathjax-support = true
-[preprocessor.numeq]
+math = true
+additional-js = ["js/custom-mathjax.js"]

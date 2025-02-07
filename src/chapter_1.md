@@ -28,9 +28,9 @@ It is also common to use a Per Unit value, denoted PU, for other nodes which is 
 To further investigate this, some basic definitions and dependencies must be defined:
 
 Voltages:
-The voltages in a line can be calculated as 
+The voltages in a line can be calculated as described in [Equation 1](#1) 
 
-$$ \overline{V_2} = \overline{V_1}- \frac{RP+XQ}{V} -j\frac{XP+RQ}{V} {{numeq}} $$
+$$ \overline{V_2} = \overline{V_1}- \frac{RP+XQ}{V} -j\frac{XP+RQ}{V}  \tag{1} $$
 
 where R and X are the resistance and reactance of the line, and P and Q are the active and reactive power. (see page 164, eq 8.3)
 or simpler:
@@ -90,7 +90,7 @@ Y_a + Y_b + Y_c& - Y_a & - Y_b & Yc \\\\
 \end{bmatrix} 
 $$
 
-This matrice is symetrical along the diagonal and the values on the diagonal $(i,i)$ elements are the admittance between the node (represented as columns in the matrix) and the reference node.
+This matrice is symetrical along the diagonal and the values on the diagonal $ (i,i)$ elements are the admittance between the node (represented as columns in the matrix) and the reference node.
 The elements not on the diagonal, the $(i,j)$ elements, are the negative admittances between nodes $i$ and $j$
 This can be written more compact as 
 $$ YV=I{{numeq}}$$ 
