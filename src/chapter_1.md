@@ -128,7 +128,7 @@ $$Q_k^{inj}= Im(\overline S_k) = \sum_{i=1}^{N}(V_k V_i[G_{ki}sin(\theta_k-\thet
 ### Optimal Power Flow (OPF)
 General principles
 
-#### Linead OPF (DC)
+#### Linear OPF (DC)
 Specifics for LOPF
 
 #### Non-Linear OPF (AC)
