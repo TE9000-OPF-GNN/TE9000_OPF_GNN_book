@@ -8,3 +8,4 @@ title = "q"
 mathjax-support = true
 math = true
 additional-js = ["js/custom-mathjax.js","js/eq_counter.js"]
+copy-images = true

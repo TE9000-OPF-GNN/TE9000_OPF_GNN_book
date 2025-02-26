@@ -218,9 +218,15 @@ $$\overline{I_{ik}} = Y_{ik}^{se}(\overline{V_i}-\overline{V_k})+Y_{ik}^{sh}(\ov
 
 
 The power flowing through the branch (from i to k) can be found as:
-$$\overline{S_{ik}} = P_{ik}+jQ_{ik}= \overline{V_i}\space\overline{I_{ik}}^* = Y_{ik}^{se*}(\|V_i|^2-\overline{V_i}\space\overline{V_{k}}^{*})+Y_{ik}^{sh\*} \|V_k|^2$$
+$$\overline{S_{ik}} = P_{ik}+jQ_{ik}= \overline{V_i}\space\overline{I_{ik}}^* = Y_{ik}^{se*}(\|V_i|^2-\overline{V_i}\space\overline{V_{k}}^{*})+Y_{ik}^{sh\*} \|V_k|^2\tag{numeq}$$
 
+As an example of how the results may look a load flow using the IEEE 9-bus system can be used. 
+The below 9-bus network is simulated with varying loads as indicated:
+![Figure1](figures/test_network.png)
 
+When load flow calculation is ran with 15 timeframes (with varying load) the results may look as follows:
+![Figure2](figures/bus_results.png)
+![Figure3](figures/line_results.png)
 
 ### Optimal Power Flow (OPF)
 General principles
