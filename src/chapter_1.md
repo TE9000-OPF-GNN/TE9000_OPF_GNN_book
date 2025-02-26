@@ -47,6 +47,7 @@ $$ Y_x= \frac{1}{Z_x} {{numeq}} $$
 To obey Kirchhoff's law, the sum of all currents entering a node must be zero.
 For a simple network, this can be written as a sum of all currents flowing out of the node as positive and flowing to the node as negative (or vice versa).
 (see example on page 166 in [1])
+
 ![[Pasted image 20250128130031.png]]
 
 
@@ -125,6 +126,17 @@ This can then be rewritten by expanding and separating the real and imaginary pa
 
 $$P_k^{inj}= Re(\overline S_k) = \sum_{i=1}^{N}(V_k V_i[G_{ki}cos(\theta_k-\theta_i)+B_{ki}sin(\theta_k-\theta_i)]){{numeq}}$$
 $$Q_k^{inj}= Im(\overline S_k) = \sum_{i=1}^{N}(V_k V_i[G_{ki}sin(\theta_k-\theta_i)+B_{ki}cos(\theta_k-\theta_i)]){{numeq}}$$
+
+Based on these power flow equations we can solve the unknows but since the equations contain both variables multiplied with eachother and transcendental functions solving them requires an iterative approach. Since they are non-linear they cannot be solved analytically or directly [1]. 
+
+The Newton Raphson method is one way of a solution based on an iterative process where 
+$$ x^{k+1}= x^k- \frac{f(x^k)}{f'(x^k)}$$.
+This is derived from a approximation based on the Taylor series with the second order derivative and further omitted.
+$$ f(x) \approx f(x^0)+f'(x^0)(x-x^0)+\frac{1}{2}f''(x^0)(x-x^0)^2+....$$ 
+As we have several variables and functions to solve in the power flow equation case we need to concider the partial derivatives which can be written in taylor expansion as
+$$ f(x,y) \approx f(x^0,y^0)+\delta $$
+
+
 ### Optimal Power Flow (OPF)
 General principles
 
