@@ -7,4 +7,4 @@ title = "q"
 [output.html]
 mathjax-support = true
 math = true
-additional-js = ["js/custom-mathjax.js"]
+additional-js = ["js/custom-mathjax.js","js/eq_counter.js"]
