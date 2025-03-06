@@ -210,7 +210,35 @@ $$
 \frac{\partial Q_3}{\partial \theta_2} & \frac{\partial Q_3}{\partial \theta_3} & \frac{\partial Q_3}{\partial V_3}
 \end{bmatrix}
 $$
-these partial derivatives are found as described in [1] page 177.
+these partial derivatives are found as follows (as described in [1] page 177):
+##### For the angles:
+for the $P_k$ and $\theta_k$:
+$$\frac{\partial P_2}{\partial \theta_2} = \sum_{i=1, i \neq 2}^{N}(V_2V_i[-G_{2i}sin(\theta_2-\theta_i)+B_{2i}cos(\theta_2-\theta_i)]) \tag{numeq}$$
+$$\frac{\partial P_3}{\partial \theta_3} = \sum_{i=1, i \neq 3}^{N}(V_3V_i[-G_{3i}sin(\theta_3-\theta_i)+B_{2i}cos(\theta_3-\theta_i)]) \tag{numeq}$$
+
+for the $P_k$ and $\theta_{i\neq k}$:
+$$\frac{\partial P_2}{\partial \theta_3} = (V_2V_3[G_{23}sin(\theta_2-\theta_3)-B_{23}cos(\theta_2-\theta_3)]) \tag{numeq}$$
+$$\frac{\partial P_3}{\partial \theta_2} = (V_3V_2[G_{32}sin(\theta_3-\theta_2)-B_{32}cos(\theta_3-\theta_2)]) \tag{numeq}$$
+
+for the $Q_k$ and $\theta_k$:
+$$\frac{\partial Q_3}{\partial \theta_3} = \sum_{i=1, i \neq 3}^{N}(V_3V_i[G_{3i}cos(\theta_3-\theta_i)+B_{2i}sin(\theta_3-\theta_i)]) \tag{numeq}$$
+
+for the $Q_k$ and $\theta_{i \neq k}$:
+$$\frac{\partial Q_3}{\partial \theta_2} = \sum_{i=1, i \neq 3}^{N}(V_3V_i[-G_{3i}cos(\theta_3-\theta_i)-B_{2i}sin(\theta_3-\theta_i)]) \tag{numeq}$$
+
+###### For the voltages
+for the $P_k$ and $V_k$:
+$$\frac{\partial P_3}{\partial V_3} = \sum_{i=1, i \neq 3}^{N}(V_i[G_{3i}cos(\theta_3-\theta_i)+B_{3i}sin(\theta_3-\theta_i)]+2G_{33}V_3) \tag{numeq}$$
+
+for the $P_k$ and $V_{i \neq k}$:
+$$\frac{\partial P_3}{\partial V_2} = (V_3[G_{32}cos(\theta_3-\theta_2)+B_{32}sin(\theta_3-\theta_2)]) \tag{numeq}$$
+
+for the $Q_k$ and $V_k$:
+$$\frac{\partial Q_3}{\partial V_3} = \sum_{i=1, i \neq 3}^{N}(V_i[G_{3i}sin(\theta_3-\theta_i)+B_{3i}cos(\theta_3-\theta_i)]+2B_{33}V_3) \tag{numeq}$$
+
+Since there are no instances of $Q_k$ and $V_{i \neq k}$ there is no need to calculate, but the general form of this is:
+$$\frac{\partial Q_k}{\partial V_i} = (V_kV_i[G_{ki}sin(\theta_k-\theta_i)+B_{ki}sin(\theta_k-\theta_i)]) \tag{numeq}$$
+
 The voltages and angles can then be found by solving (35) iteratively. When these are found the current and flow in each branch can be found using the admittance and voltages. For node i the current flowing into node i form node k is :
 $$\overline{I_{ik}} = Y_{ik}(\overline{V_i}-\overline{V_k})\tag{numeq}$$
 Normally there is a shunt-admittance to consider so the (36) is then
@@ -225,11 +253,51 @@ The below 9-bus network is simulated with varying loads as indicated:
 ![Figure1](figures/test_network.png)
 
 When load flow calculation is ran with 15 timeframes (with varying load) the results may look as follows:
-![Figure2](figures/bus_results.png)
-![Figure3](figures/line_results.png)
+![Figure 2](figures/bus_results.png)
+*Figure 2: Bus results*
+![Figure 3](figures/line_results.png)
+*Figure 3: Line results*
 
+
+In Figure 2 the Active power (P), Reactive Power (Q), voltage angle ($ \theta$) and voltage amplitude (V) for each bus is shown. 
+We can observe that the slack bus active power (in blue in the top plot) varies corresponding to the aggregated change in loads in bus 5, 7 and 9 (purple, pink and yellow). 
+All the loads are in negative values as pr. load flow convention, so they can easiliy be identified in the bottom of the plot. 
+As the loads decreases in the right part of the x-axis(time) it can also be observed that the generation at the slack bus is actually negative. 
+The reactive power in the loads also varies but in a different pattern, so that the total reacive power remains more or less the same throughout the simulations. The voltage magnitude and angle in each bus changes corresponding to the load changes and following change in injected power (P and Q). 
+
+
+As the P and Q in loads are varying with the same pattern it is not obvious wether the angle and magnitudes change as a result of changes in P or Q, 
+but if we investigate the equations 36 to 44 we may observe that the changes in P and Q related to V and $ \theta$ are dependent on the sine and cosine of the angle between two nodes, multiplied by the G and B of the admittance.
+If we assume that the difference in angles are relatively small the sine term is relatively small and can for the purpose of understanding the relation be neglected, while the the cosine term is relatively large and may be concidered $ \approx 1 $ for the purpose of understanding the relation. 
+For the P and $ \theta$ relation is dependent on the cosine multiplied with the B from (20) which is related to the reactance portion of the impedance which is significant for large $\frac{R}{X}$ ratios typically found in distribution grids
+The P and V relation is dependent on the cosine multiplied by G from (20) which is related to the resistance part of the impedance, which again is relatively low for large $\frac{R}{X}$ ratios.
+
+Similarly the Q and $ \theta$ relation and Q and V relation are oposite, cosine is multiplied with G (related to resistance part of impedance) for the $\frac{\partial Q}{\partial V}$ relation and with B (related to reactance part of impedance) for the $\frac{\partial Q}{\partial \theta}$ relation.
+Thus we should expect, given a large $\frac{R}{X}$ that the $\frac{\partial P}{\partial \theta}$ and $\frac{\partial Q}{\partial V}$ have a larger impact than the $\frac{\partial Q}{\partial \theta}$ and $\frac{\partial P}{\partial V}$
+
+If we re-run the simluations with Q and P varying separately from eachother we may observe this relation more clearly as shown in figure 4 below.
+![Figure 4: Busresults_indep_P_and_Q](figures/bus_results_independent_P_and_Q.png)
+*Figure 4: Bus results with independent variation in P and Q*
+
+In Figure 4 the increase and deacease in P and Q can be observed in the purple, pink and yellow lines for bus 5, 7 and 8.
+
+
+In Figure 3 the line results are shown. Here the S_nom for each line is plotted as red lines for. As can be observed for lines 3, 7 and 9 there are some timesteps where the power flow exceeds the line capacity. 
+This can be resolved by changing the setpoints for genertors in bus 2 and 3 but it is not obvious what they should be. Changing the setpoint may cause new issues.
 ### Optimal Power Flow (OPF)
 General principles
+The Optimal Power Flow (OPF) is used to find optimal ways to redispacth generation in  a power flow analysis to optimize for particular objective(s).
+Optimization can be viewed as a very simple economical optimization where the cost of energy is minimized based on a set of controllable actions such as the active power, reactive power and voltage for Slack and PV buses. 
+Other controllable actions may be tap changers for transformers or reactive power compenstation devices. 
+
+Furthermore there are some constraints such as branch nominal power ratings and voltage magnitudes to concider. 
+
+
+
+When using PyPSA as for the calculations and plots above there are some build in methods for solving optimal power flow.
+
+
+
 
 #### Linear OPF (DC)
 Specifics for LOPF
