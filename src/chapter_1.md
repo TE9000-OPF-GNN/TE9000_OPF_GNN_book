@@ -47,7 +47,7 @@ $$ \overline I_S = \frac{\overline V_S}{Z_S} \tag{numeq} $$
 $$ Y_x= \frac{1}{Z_x} \tag{numeq} $$
 To obey Kirchhoff's law, the sum of all currents entering a node must be zero.
 For a simple network, this can be written as a sum of all currents flowing out of the node as positive and flowing to the node as negative (or vice versa).
-(see example on page 166 in [1])
+(see example on page 166 in @{kirschen2024power})
 
 ![[Pasted image 20250128130031.png]]
 
@@ -95,7 +95,7 @@ $$
 This matrice is symetrical along the diagonal and the values on the diagonal $ (i,i)$ elements are the admittance between the node (represented as columns in the matrix) and the reference node.
 The elements not on the diagonal, the $(i,j)$ elements, are the negative admittances between nodes $i$ and $j$
 This can be written more compact as 
-$$ YV=I\tagnumeq}$$ 
+$$ YV=I\tag{numeq}$$ 
 or solved for $V$:
 $$ V=Y^{-1}I \tag{numeq}$$
 
@@ -128,7 +128,7 @@ This can then be rewritten by expanding and separating the real and imaginary pa
 $$P_k^{inj}= Re(\overline S_k) = \sum_{i=1}^{N}(V_k V_i[G_{ki}cos(\theta_k-\theta_i)+B_{ki}sin(\theta_k-\theta_i)])\tag{numeq}$$
 $$Q_k^{inj}= Im(\overline S_k) = \sum_{i=1}^{N}(V_k V_i[G_{ki}sin(\theta_k-\theta_i)+B_{ki}cos(\theta_k-\theta_i)])\tag{numeq}$$
 
-Based on these power flow equations we can solve the unknows but since the equations contain both variables multiplied with eachother and transcendental functions solving them requires an iterative approach. Since they are non-linear they cannot be solved analytically or directly [1]. 
+Based on these power flow equations we can solve the unknows but since the equations contain both variables multiplied with eachother and transcendental functions solving them requires an iterative approach. Since they are non-linear they cannot be solved analytically or directly @{kirschen2024power}. 
 
 The Newton Raphson method is one way of a solution based on an iterative process where:
 $$ x^{k+1}= x^k- \frac{f(x^k)}{f'(x^k)}\tag{numeq}$$ 
@@ -210,7 +210,7 @@ $$
 \frac{\partial Q_3}{\partial \theta_2} & \frac{\partial Q_3}{\partial \theta_3} & \frac{\partial Q_3}{\partial V_3}
 \end{bmatrix}
 $$
-these partial derivatives are found as follows (as described in [1] page 177):
+these partial derivatives are found as follows (as described in @{kirschen2024power} page 177):
 ##### For the angles:
 for the $P_k$ and $\theta_k$:
 $$\frac{\partial P_2}{\partial \theta_2} = \sum_{i=1, i \neq 2}^{N}(V_2V_i[-G_{2i}sin(\theta_2-\theta_i)+B_{2i}cos(\theta_2-\theta_i)]) \tag{numeq}$$
@@ -246,7 +246,7 @@ $$\overline{I_{ik}} = Y_{ik}^{se}(\overline{V_i}-\overline{V_k})+Y_{ik}^{sh}(\ov
 
 
 The power flowing through the branch (from i to k) can be found as:
-$$\overline{S_{ik}} = P_{ik}+jQ_{ik}= \overline{V_i}\space\overline{I_{ik}}^* = Y_{ik}^{se*}(\|V_i|^2-\overline{V_i}\space\overline{V_{k}}^{*})+Y_{ik}^{sh\*} \|V_k|^2\tag{numeq}$$
+$$\overline{S_{ik}} = P_{ik}+jQ_{ik}= \overline{V_i}\space\overline{I_{ik}}^* = Y_{ik}^{se*}(\|V_i|^2-\overline{V_i}\space\overline{V_{k}}^{*})+Y_{ik}^{sh*}|V_k|^2\tag{numeq}$$
 
 As an example of how the results may look a load flow using the IEEE 9-bus system can be used. 
 The below 9-bus network is simulated with varying loads as indicated:
@@ -291,12 +291,91 @@ Optimization can be viewed as a very simple economical optimization where the co
 Other controllable actions may be tap changers for transformers or reactive power compenstation devices. 
 
 Furthermore there are some constraints such as branch nominal power ratings and voltage magnitudes to concider. 
+When using PyPSA as for the calculations and plots above there are some build in methods for solving optimal power flow. (Add more later?)
 
+#### Optimization techniques
 
+To optimize the power flow we first need some techniques for optimizing. A set of (x)? optimization techniques and algoritms are described below.
 
-When using PyPSA as for the calculations and plots above there are some build in methods for solving optimal power flow.
+In essence optimization techniques are based on developing a mathematical model for your system that can then be used to minimize or maximize an output. For power systems, minimizing losses, maximizing capacity utilization etc. can be relevant outputs to model and optimize.  
 
+The way these models are developed and how the optimization is solved can vary.
 
+##### Linear programming
+If the model can be expressed as a set linear equations and maximum or minimum of the outputs are what we look for then linear programming can be used. 
+
+For a singel variable system we can model this as a function $f(x)$, we can simply define the derivative of the function and find the values where $f'(x)=0$ to find the minimum and maximum values for $f(x)$. 
+For multiple variable systems such as $f(x_1,x_2,...x_n)$ the an optimum can be found for where all the partial derivatives are zero:
+$$\frac{\partial f(x_1,x_2,...x_n)}{\partial x_1} =0,  
+\frac{\partial f(x_1,x_2,...x_n)}{\partial x_2} =0,...
+\frac{\partial f(x_1,x_2,...x_n)}{\partial x_n} =0 $$
+
+This is a requirement for a optimum, but does not neccessarily mean that all solutions are real minimums or maximums as there can be local (or weak) minimums and maximums. 
+Local optimums are the points ($x_0$) there this requirements are satisfied, but there are other points within the limits where $f(x)>f(x_0)$ (for maximums) or  $f(x)<f(x_0)$ (for minimums)
+
+Further there must be convexity and/or concavity in the functions in order to find optimums. Functions can be both convex and concave. A definition of a convex function can be expressed as a function $f(x)$ is convex if :
+$$ f[\lambda x_2+(1-\lambda)x_1] \leq \lambda f(x_2) + (1-\lambda)f(x_1)$$
+and concave if:  
+$$ f[\lambda x_2+(1-\lambda)x_1] \geq \lambda f(x_2) + (1-\lambda)f(x_1)$$
+for a range of $x \in [x_{min},x_{max}]  $ where any two points $x_1$ and $x_2$ in this interval and all values for $\lambda \in [0,1]$ satisfy either of the two equations.
+
+This is relevant as a function that is convex with a constraint set that is convex can be shown to have an uniqe solution. However this is not the genral case for power flow problems as this are, in general, non-convex. Contrary there is usually more than one minima and the difference can be significant.
+
+The Taylor expansion can be used to find if a function $f(x)$ has an optimum by assessing the first term in the taylor series.
+
+$$f(a) = f(a) + f'(a)(x-a) + \frac{f''(a)}{2!}(x-a)^2+...+\frac{f^n(a)}{n!}(x-a)^n$$
+For two points $x_1$ and $x_2$ where $x_2 = x_1 + h$ we can define $\theta$ such that $0 \leq \theta  \leq 1$ and the the Taylor series can be rewritten as
+$$f(x_2)= f(x_1)+ hf'(x_1) +\frac{h^2}{2!}f''(x_1)+...+\frac{h^n}{n!}f^{(n)}[\theta x_1+(1-\theta)x_2]$$
+For functions of multivariables this can be written with a vector of gradients (including only the first order derivatives):
+$$f(\overline x_2) = f(\overline x_1) +\overline{\nabla} f[\theta x_1+(1-\theta)x_2]h$$
+where
+$$\overline{\nabla}f = \begin{pmatrix}\frac{\partial f}{\partial x_1},& \frac{\partial f}{\partial x_2}&\ldots& \frac{\partial f}{\partial x_n} \end{pmatrix}$$
+
+This gradient vector of first order partial derivatives points in the direction of the steepes ascent($\nabla f$) or descent($-\nabla f$) 
+
+including the 2nd order derivatives can be done by defining what is called the Hessian matrix of second order partial derivatives:
+$$ H=
+\begin{bmatrix}
+\frac{\partial ^2f(x_1,...x_n)}{\partial x_1\partial x_1} & \frac{\partial ^2f(x_1,...x_n)}{\partial x_1\partial x_2}&\cdots&\frac{\partial ^2f(x_1,...x_n)}{\partial x_1\partial x_n}\\
+\frac{\partial ^2f(x_1,...x_n)}{\partial x_2\partial x_1} & \frac{\partial ^2f(x_1,...x_n)}{\partial x_2\partial x_2}  & \cdots & \frac{\partial ^2f(x_1,...x_n)}{\partial x_2\partial x_n}\\
+\vdots&\vdots & \ddots & \vdots\\
+\frac{\partial ^2f(x_1,...x_n)}{\partial x_n\partial x_1} & \frac{\partial ^2f(x_1,...x_n)}{\partial x_n\partial x_3} & \cdots & \frac{\partial ^2f(x_1,...x_n)}{\partial x_n\partial x_n}
+\end{bmatrix}
+$$
+The taylor series for the multivariable functioncan then be written as
+$$f(\overline x_2)=f(\overline x_1) + \nabla f(x_1)^Th+\frac1 2h^TH_f[\theta x_1 + (1-\theta)x_2]h$$
+
+The Hessian can be implemented in the Newtons method  to iteratively find minima. Compared to the earlier forumalting we now use the following update rule:
+$$x_{k+1} = x_k- H^{-1}(x-k) \nabla f(x_k)$$
+
+The Hessian $(H_f)$ can also be used to decide it the point(s) where $\nabla f=0$ are minimum ($H_f$ is positive definite), maximum ($H_f$ is negative and definite) or sadle points ($H_f$ has both positive and negative eigenvalues)
+
+In the plots below the functions $f(x,y) = x^2+y^2$, $g(x,y) = -x^2-y^2$ and $h(x,y) =x^2-y^2$ for the point $f(0,0)$ would have a Hessian matrix of
+$$H_f=\begin{bmatrix}
+\frac{\partial^2 f}{\partial x^2} & \frac{\partial^2 f}{\partial x \partial y} \\ \frac{\partial^2 f}{\partial y \partial x} & \frac{\partial^2 f}{\partial y^2} \end{bmatrix} = 
+\begin{bmatrix}
+2&0\\0&2
+\end{bmatrix}$$
+for $g(x,y)$ and $h(x,y)$ the Hessian matrixes whould be
+$$H_g=\begin{bmatrix}
+-2&0\\0&-2
+\end{bmatrix}, 
+H_h=\begin{bmatrix}
+2&0\\0&-2
+\end{bmatrix}$$
+This indcates that $f(0,0)$ is a minimum, $g(0,0)$ is a maximum and $h(0,0)$ is a sadle point as the eigenvalues of this Hessian determine whether we have a minimum (all positive), maximum (all negative), or saddle point (mixed signs)
+
+![Figure 5a: Hessian matrixa](figures/Hessian%20visualizations.png)
+
+*Figure 5a: Surface visialization of minima*
+
+![Figure 5b: Hessian matrixb](figures/Hessian%20visualizations_2.png)
+
+*Figure 5b: Surface visialization of maxima*
+
+![Figure 5c: Hessian matrixc](figures/Hessian%20visualizations_3.png)
+
+*Figure 5c Surface visialization of saddlepoint*
 
 
 #### Linear OPF (DC)
@@ -311,7 +390,7 @@ Specifics on OPF with security constraints
 
 ## References
 ### Basic Power Flow
-[1]: Daniel S. Kirschen, Power Systems: Fundamental Concepts and the Transition to Sustainability | Wiley. Wiley, 2024. Tilgjengelig på: https://www.wiley.com/en-us/Power+Systems%3A+Fundamental+Concepts+and+the+Transition+to+Sustainability-p-9781394199525 
+@{kirschen2024power}: Daniel S. Kirschen, Power Systems: Fundamental Concepts and the Transition to Sustainability | Wiley. Wiley, 2024. Tilgjengelig på: https://www.wiley.com/en-us/Power+Systems%3A+Fundamental+Concepts+and+the+Transition+to+Sustainability-p-9781394199525 
 Chapter 8, 9, and 11 (34 pages)
 
 [2]:A. Garcés, Mathematical Programming for Power Systems Operation: From Theory to Applications in Python. John Wiley & Sons, 2021.
@@ -323,6 +402,9 @@ Chapter 8, 9, and 11 (34 pages)
 
 [4]:https://pypsa.readthedocs.io/en/latest/user-guide/power-flow.html
 10 pages
+
+Added reference:
+Das J.C., Load Flow Optimization and Optimal Power Flow.
 
 
 ### Security Constrained Optimal Power Flow
