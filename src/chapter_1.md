@@ -50,6 +50,8 @@ For a simple network, this can be written as a sum of all currents flowing out o
 (see example on page 166 in @{kirschen2024power})
 
 ![[Pasted image 20250128130031.png]]
+![Figure 1](figures/example_diagram.png)
+*Figure 1: Example*
 
 
 These equations can be re-written as the product of the admittance multiplied by the voltage drop.
