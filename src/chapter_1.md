@@ -306,6 +306,10 @@ The way these models are developed and how the optimization is solved can vary.
 ##### Linear programming
 If the model can be expressed as a set linear equations and maximum or minimum of the outputs are what we look for then linear programming can be used. 
 
+Something more or delete?
+
+##### Taylors Theoreme
+
 For a singel variable system we can model this as a function $f(x)$, we can simply define the derivative of the function and find the values where $f'(x)=0$ to find the minimum and maximum values for $f(x)$. 
 For multiple variable systems such as $f(x_1,x_2,...x_n)$ the an optimum can be found for where all the partial derivatives are zero:
 $$\frac{\partial f(x_1,x_2,...x_n)}{\partial x_1} =0,  
@@ -316,22 +320,22 @@ This is a requirement for a optimum, but does not neccessarily mean that all sol
 Local optimums are the points ($x_0$) there this requirements are satisfied, but there are other points within the limits where $f(x)>f(x_0)$ (for maximums) or  $f(x)<f(x_0)$ (for minimums)
 
 Further there must be convexity and/or concavity in the functions in order to find optimums. Functions can be both convex and concave. A definition of a convex function can be expressed as a function $f(x)$ is convex if :
-$$ f[\lambda x_2+(1-\lambda)x_1] \leq \lambda f(x_2) + (1-\lambda)f(x_1)$$
+$$ f[\lambda x_2+(1-\lambda)x_1] \leq \lambda f(x_2) + (1-\lambda)f(x_1)\tag{numeq}$$
 and concave if:  
-$$ f[\lambda x_2+(1-\lambda)x_1] \geq \lambda f(x_2) + (1-\lambda)f(x_1)$$
+$$ f[\lambda x_2+(1-\lambda)x_1] \geq \lambda f(x_2) + (1-\lambda)f(x_1)\tag{numeq}$$
 for a range of $x \in [x_{min},x_{max}]  $ where any two points $x_1$ and $x_2$ in this interval and all values for $\lambda \in [0,1]$ satisfy either of the two equations.
 
 This is relevant as a function that is convex with a constraint set that is convex can be shown to have an uniqe solution. However this is not the genral case for power flow problems as this are, in general, non-convex. Contrary there is usually more than one minima and the difference can be significant.
 
 The Taylor expansion can be used to find if a function $f(x)$ has an optimum by assessing the first term in the taylor series.
 
-$$f(a) = f(a) + f'(a)(x-a) + \frac{f''(a)}{2!}(x-a)^2+...+\frac{f^n(a)}{n!}(x-a)^n$$
+$$f(a) = f(a) + f'(a)(x-a) + \frac{f''(a)}{2!}(x-a)^2+...+\frac{f^n(a)}{n!}(x-a)^n\tag{numeq}$$
 For two points $x_1$ and $x_2$ where $x_2 = x_1 + h$ we can define $\theta$ such that $0 \leq \theta  \leq 1$ and the the Taylor series can be rewritten as
-$$f(x_2)= f(x_1)+ hf'(x_1) +\frac{h^2}{2!}f''(x_1)+...+\frac{h^n}{n!}f^{(n)}[\theta x_1+(1-\theta)x_2]$$
+$$f(x_2)= f(x_1)+ hf'(x_1) +\frac{h^2}{2!}f''(x_1)+...+\frac{h^n}{n!}f^{(n)}[\theta x_1+(1-\theta)x_2]\tag{numeq}$$
 For functions of multivariables this can be written with a vector of gradients (including only the first order derivatives):
-$$f(\overline x_2) = f(\overline x_1) +\overline{\nabla} f[\theta x_1+(1-\theta)x_2]h$$
+$$f(\overline x_2) = f(\overline x_1) +\overline{\nabla} f[\theta x_1+(1-\theta)x_2]h\tag{numeq}$$
 where
-$$\overline{\nabla}f = \begin{pmatrix}\frac{\partial f}{\partial x_1},& \frac{\partial f}{\partial x_2}&\ldots& \frac{\partial f}{\partial x_n} \end{pmatrix}$$
+$$\overline{\nabla}f = \begin{pmatrix}\frac{\partial f}{\partial x_1},& \frac{\partial f}{\partial x_2}&\ldots& \frac{\partial f}{\partial x_n} \end{pmatrix}\tag{numeq}$$
 
 This gradient vector of first order partial derivatives points in the direction of the steepes ascent($\nabla f$) or descent($-\nabla f$) 
 
@@ -345,10 +349,10 @@ $$ H=
 \end{bmatrix}
 $$
 The taylor series for the multivariable functioncan then be written as
-$$f(\overline x_2)=f(\overline x_1) + \nabla f(x_1)^Th+\frac1 2h^TH_f[\theta x_1 + (1-\theta)x_2]h$$
+$$f(\overline x_2)=f(\overline x_1) + \nabla f(x_1)^Th+\frac1 2h^TH_f[\theta x_1 + (1-\theta)x_2]h \tag{numeq}$$
 
 The Hessian can be implemented in the Newtons method  to iteratively find minima. Compared to the earlier forumalting we now use the following update rule:
-$$x_{k+1} = x_k- H^{-1}(x-k) \nabla f(x_k)$$
+$$x_{k+1} = x_k- H^{-1}(x-k) \nabla f(x_k)\tag{numeq}$$
 
 The Hessian $(H_f)$ can also be used to decide it the point(s) where $\nabla f=0$ are minimum ($H_f$ is positive definite), maximum ($H_f$ is negative and definite) or sadle points ($H_f$ has both positive and negative eigenvalues)
 
@@ -356,14 +360,14 @@ In the plots below the functions $f(x,y) = x^2+y^2$, $g(x,y) = -x^2-y^2$ and $h(
 $$H_f=\begin{bmatrix}
 \frac{\partial^2 f}{\partial x^2} & \frac{\partial^2 f}{\partial x \partial y} \\ \frac{\partial^2 f}{\partial y \partial x} & \frac{\partial^2 f}{\partial y^2} \end{bmatrix} = 
 \begin{bmatrix}
-2&0\\0&2
-\end{bmatrix}$$
+2&0 \\\\ 0&2
+\end{bmatrix}\tag{numeq}$$
 for $g(x,y)$ and $h(x,y)$ the Hessian matrixes whould be
 $$H_g=\begin{bmatrix}
--2&0\\0&-2
+-2&0\\\\0&-2
 \end{bmatrix}, 
 H_h=\begin{bmatrix}
-2&0\\0&-2
+2&0\\\\0&-2
 \end{bmatrix}$$
 This indcates that $f(0,0)$ is a minimum, $g(0,0)$ is a maximum and $h(0,0)$ is a sadle point as the eigenvalues of this Hessian determine whether we have a minimum (all positive), maximum (all negative), or saddle point (mixed signs)
 
@@ -379,12 +383,182 @@ This indcates that $f(0,0)$ is a minimum, $g(0,0)$ is a maximum and $h(0,0)$ is 
 
 *Figure 5c Surface visialization of saddlepoint*
 
+##### Lagrange
+For optimizing within a set of constrains a method called Lagrangian Method may be used.
 
-#### Linear OPF (DC)
-Specifics for LOPF
+If we have a function $f(x,y) =k$, with a set of constraints $g(x,y) = b$ and we need to optimize the function $f(x,y)$ without violating the constraint $g(x,y)$.
 
-#### Non-Linear OPF (AC)
-Specifics for NLOPF
+If $f(x,y)$ is given as
+$$
+f(x,y) = y \times x + 1
+\tag{numeq}
+$$
+and 
+$$
+g(x,y) = x^2 + y^2 -1 = 0 
+\tag{numeq}
+$$
+
+The function $f(x,y)$ will have some tangent lines that just "touch" the edge of the constraint $g(x,y)$
+At this point, or two points in this example, the gradient of $f(x,y)$ will be equal to the gradient of $g(x,y)$. This can be expressed mathematically as 
+$$\frac{dx}{dy} = \frac{\partial f / \partial y}{\partial f / \partial x} \text{  the slope of} f(x,y)\tag{numeq}$$
+$$\frac{dx}{dy} = \frac{\partial g / \partial y}{\partial g / \partial x} \text{  the slope of} g(x,y)\tag{numeq}$$
+
+When these slopes are the same, we have:
+$$
+\frac{\partial f / \partial y}{\partial f / \partial x}=\frac{\partial g / \partial y}{\partial g / \partial x} = \lambda\tag{numeq}$$
+This ratio $\lambda$ is called the Lagrangian multiplier.
+From (62) we get
+$$
+\frac{\partial f}{\partial x}-\lambda \frac{\partial g}{\partial x} = 0
+\tag{numeq}
+$$
+and
+$$
+\frac{\partial f}{\partial y}-\lambda \frac{\partial g}{\partial y} = 0
+\tag{numeq}
+$$
+Or this can be written as:
+$$
+\nabla f- \lambda \nabla g = 0
+\tag{numeq}
+$$
+
+The Lagrangian function can be defined as 
+$$
+F(x,y,\lambda) = f(x,y)+\lambda [b-g(x,y)]
+\tag{numeq}
+$$
+
+Differentiating this function with respect to $x$, $y$ and $\lambda$ equal to zero will give us (63) and (64).
+We can now writhe this as a minimized unconstrained function of the three variables $x$, $y$ and $\lambda$
+
+$$
+h(x,y,\lambda) = f(x,y)-\lambda g(x,y)
+\tag{numeq}
+$$
+with 
+$$
+\frac{\partial h}{\partial x}=0,
+\frac{\partial h}{\partial y}=0,
+\frac{\partial h}{\partial \lambda}=0
+\tag{numeq}
+$$
+
+In our example the gradient of $f(x,y) = x\times y +1$ is 
+$$
+\frac{\partial f}{\partial x} = y, \frac{\partial f}{\partial y} = x
+$$
+
+and the the gradient of $g(x,y) = x^2+y^2-1 = 0$ is 
+$$
+\frac{\partial g}{\partial x} = 2x, \frac{\partial g}{\partial y} = 2y
+$$
+We can use the $h(x,y,\lambda)$ function described above, but for our example, just solving the the gradient equations directly. We then have the equations to solve:
+$$y =\lambda 2x $$
+$$x =\lambda 2y $$
+$$x^2+y^2 -1=0$$
+Solving these  (by substitution x with the equation) gives two solutions for y where one is $y=0$, and $\lambda = \frac{1}{&plusmn; \sqrt{\lambda}}$
+Since y=0 also gives x= 0 which is not within the constraint. Then $y=&plusmn;\frac{1}{2}$
+
+Substituting this into the first equation gives $y=&plusmn;x$. Inserting both this into the third equation gives $$x^2+(-x)^2=1$$
+which means that $$x = &plusmn;\frac{1}{\sqrt2}$$
+
+This gives the same solution for y as $y=&plusmn;x$ which again gives four possible points 
+$$(\frac{1}{\sqrt 2},\frac{1}{\sqrt 2}), (\frac{-1}{\sqrt 2},\frac{1}{\sqrt 2}), (\frac{1}{\sqrt 2},\frac{-1}{\sqrt 2}), (\frac{-1}{\sqrt 2},\frac{-1}{\sqrt 2})$$ 
+
+These are the maximums and minimums of the $f(x,y)$ with constraint $g(x,y)=0$. We dont know beforehand which are the maximums and the minimums but we can now evaluate the function $f$ to find the values.
+
+Solving the $h(x,y,\lambda)$ for each of the partial derivatives equal to 0 gives the same solutions
+This mathematical method is visualized in the figures below:
+
+
+![Lagrange_solution_2d](figures/Lagrange_2d.png)
+*Figure 6a 2D visualization of Lagrange optimal points*
+
+![Lagrange_solution_3d](figures/Lagrange_3d.png)
+*Figure 6b 3D visualization of Lagrange optimal points*
+
+These principles may be applied to power system load flow analysis to e.g. optimize cost of generation dispatch or minimize losses. If used to optimize generator dispatch, this means that we can express the cost of generation per generator as 
+$$C_i = \frac{1}{2}a_nP_{Gn}^2+b_nP_{Gn} + w_n$$
+Here $a_n$, $b_n$ and $w_n$ are constants.
+We need to make sure the avaliable power is equal to or larger than the power demand, so we have the constraint 
+$$\sum(P_G)>P_D$$
+
+
+## Linear OPF (DC-OPF)
+
+The main charactheristics of linear OPF ist that the AC power flow equations are simplified using linear approximations of the network physics:  
+- Line resistance \\( R \ll X \\), enabling \\( \sin(\theta_i - \theta_j) \approx \theta_i - \theta_j \\).  
+- Voltage magnitudes \\( V_i \approx 1 \, \text{p.u.} \\), eliminating reactive power \\( Q \\).  
+- No transmissionlosses (\\( P_{\text{loss}} \approx 0 \\)) and small angle differences.  
+
+This reduces the power flow equations to linear relationships between active power \\( P \\) and voltage angles \\( \theta \\):  
+\\[ P_{ij} = B_{ij} (\theta_i - \theta_j) \\]  
+where \\( B_{ij} = \frac{1}{X_{ij}} \\) is the line susceptance.  
+
+ 
+The DC-OPF can then be formulated to minimize generation costs subject to network constraints:  
+
+The objective is formualted as prevously defined (repeated below)  
+\\[ \min \sum_{g \in \mathcal{G}} C_g(P_g) \quad \text{where } C_g(P_g) = a_g P_g^2 + b_g P_g + c_g \\]  
+
+The constraings are given by the fact tha the generated outpyt must be larger than the total consumption  
+\\[ \sum_{g \in \mathcal{G}} P_g = P_{\text{load}} (+ P_{\text{loss}}) \\]  
+   (With \\( P_{\text{loss}} \\) often neglected or approximated as \\( \sum_{ij} B_{ij} \theta_{ij}^2 \\))  
+The power flow through lines must not be larger than the maximum limit for the specific line
+\\[ |P_{ij}| \leq P_{ij}^{\text{max}} \\]  
+
+And the generators output must be less or equal to the maximum (and larger or equal to the minimum)
+\\[ P_g^{\text{min}} \leq P_g \leq P_g^{\text{max}} \\]  
+
+Althoug losses are usually omitted in linear OPF it can be added as a quadratic loss term
+\\[ P_{\text{loss}} \approx \sum_{ij} G_{ij} (\theta_i - \theta_j)^2 \\]  
+where \\( G_{ij} = \frac{R_{ij}}{R_{ij}^2 + X_{ij}^2} \\). This transforms the problem into a **convex quadratic program**.  
+
+**Example**:  
+For a 3-bus system with generators at buses 1–3 and losses modeled:  
+
+
+#### Example: 3-Bus System
+Consider generators at buses 1-2 with costs \$20/MWh and \$30/MWh:
+
+
+#### Non-Linear OPF (AC-OPF)  
+
+##### Key Characteristics  
+AC-OPF uses the full non-linear AC power flow equations, thus including:  
+- Reactive power \\( Q \\), voltage magnitudes \\( V \\), and phase angles \\( \theta \\).  
+- Transmission losses \\( P_{\text{loss}} = \sum_{ij} I_{ij}^2 R_{ij} \\).  
+- Non-convex constraints (making the problem NP-hard).  
+
+##### Problem Formulation  
+The objective is the same as for the linear OPF: 
+\\[ \min \sum_{g \in \mathcal{G}} C_g(P_g) \\]  
+
+**Variables**:  
+- \\( P_g, Q_g \\): Active/reactive power generation.  
+- \\( V_i, \theta_i \\): Voltage magnitudes/angles.  
+
+
+The constraints can be formulated as
+- For the load balance, Generated power must be equal to or larger than load:
+\\[ \sum_{g \in \mathcal{G}} P_g - P_{\text{load},i} = \sum_{j} V_i V_j (G_{ij} \cos \theta_{ij} + B_{ij} \sin \theta_{ij})\\]
+- The voltage must be within min and max limits
+\\[ V_i^{\text{min}} \leq V_i \leq V_i^{\text{max}} \\]  
+- The load flow thorugh the lines must be less or equal to the maximum limit fro the specific line
+\\[ S_{ij} = \sqrt{P_{ij}^2 + Q_{ij}^2} \leq S_{ij}^{\text{max}} \\]  
+
+### Loss Modeling in AC-OPF  
+Losses are **explicitly included** via the \\( I^2R \\) terms in power flow equations. The Lagrangian incorporates dual variables \\( \lambda_P, \lambda_Q \\):  
+\\[ \mathcal{L} = C_g(P_g) + \lambda_P (P_{\text{load}} + P_{\text{loss}} - \sum P_g) + \lambda_Q (Q_{\text{load}} - \sum Q_g) \\]  
+
+##### Example using PyPSA
+Both the linear and non linear Optimal Power flow may be simulated with PyPSA. 
+
+
+AC-OPF for a 3-bus system with PyPSA:  
+
 
 ### Security Constrained Optimal Power Flow (SCOPF)
 Specifics on OPF with security constraints
