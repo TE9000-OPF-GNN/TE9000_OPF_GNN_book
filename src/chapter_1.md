@@ -516,12 +516,6 @@ Althoug losses are usually omitted in linear OPF it can be added as a quadratic 
 \\[ P_{\text{loss}} \approx \sum_{ij} G_{ij} (\theta_i - \theta_j)^2 \\]  
 where \\( G_{ij} = \frac{R_{ij}}{R_{ij}^2 + X_{ij}^2} \\). This transforms the problem into a **convex quadratic program**.  
 
-**Example**:  
-For a 3-bus system with generators at buses 1–3 and losses modeled:  
-
-
-#### Example: 3-Bus System
-Consider generators at buses 1-2 with costs \$20/MWh and \$30/MWh:
 
 
 #### Non-Linear OPF (AC-OPF)  
@@ -553,11 +547,67 @@ The constraints can be formulated as
 Losses are **explicitly included** via the \\( I^2R \\) terms in power flow equations. The Lagrangian incorporates dual variables \\( \lambda_P, \lambda_Q \\):  
 \\[ \mathcal{L} = C_g(P_g) + \lambda_P (P_{\text{load}} + P_{\text{loss}} - \sum P_g) + \lambda_Q (Q_{\text{load}} - \sum Q_g) \\]  
 
-##### Example using PyPSA
-Both the linear and non linear Optimal Power flow may be simulated with PyPSA. 
+## Power flow and Optimal Power Flow with PowSyBl
+
+The PowSyBl is a project in the LF Energy Foundation. It is originally written i Java, but a library for Python, pypowsybl, is also avaliable. The functionality and documentation is still beeing developed, and new features are added continously. The example below is based on the pypowsybl version 1.10.0.
+Both the linear and non linear Optimal Power flow may be simulated with open source tools like PowSyBl. 
+In PowSyBl there are some different options for optimization. The one used for this example is the OpenRAO version.
+This is a built in optimizer and does not require a external solver. Other tools such as PyPSA or commercial tools like PowerFactory may also be used for this.
+
+In PowSyBl OpenRAO the load-flow is solved using the a built in load flow module. This is briefly explained below.
+For the optimization part, go to the next chapter.
 
 
-AC-OPF for a 3-bus system with PyPSA:  
+### PF for a 9 bus system with PowSyBl
+To analyse the power flow a network must be configured. In Powsyble this can be done either by importing from files in internal format or in industry standard formats such as Common Information Model (CIM) that are incrieasingly used by Norwegian DSOs and common among European TSOs. For simple test systems like the 9-bus system in this example some ready made templates are avaliable.
+The example below is based on the 9-bus system in pypowsybl where topology(nodes) generators, loads and branches (r,x) values are set to standardized values according to the IEEE 9-bus test system. By just creating a network and running the power flow the workflow of solving the power flow equations is can be reviewed. (Remember to set to logger level to 1 to reproduce the output). The code and output is shown in figure 7.
+
+![pypowsybl_base_lf](figures/powsybl_base_load_flow.png)
+*Figure 7 Simple AC loadflow with pypowsybl*
+
+The default load flow implementation for PowSyBl is the OpenLoadFlow based with AC Newton Raposon methods and is based ont KLU sparse linear solver. 
+
+The key steps here are the first mismatch calculation, the building of the Jacobian matrix and the computation of the \\(\delta x\\) vector as described for Newton Raphson. After calculating this the power mismatch is evaluated and the next \\(\delta x\\) is calculated unti the mismatch is less than the tolerance. Pypowsybl has implemented a technique taking advantage of the fact that the bus admittance matrix is mostly zeros with what is called the "Sparse Matrix Technique". In simple terms the Jacobian matrix is decomposed into the lower triangular and upper triangular matrices (the LU decomposition) and solving the \\(J \cdot \Delta x = -f(x) \\) more efficiently. This includes that the Jacobian is built only in the first iteration and then just updated in the next iteration. The final results in figure 8 shows that the in the third iteration the system was balanced, and the complete process took 303 ms. 
+
+![pypowsybl_base_lf_2](figures/powsybl_base_load_flow_2.png)
+*Figure 8 Simple AC loadflow with pypowsybl*
+Powsybl also includes a vizualization of the results in a network.get_network_area_diagram() command, where also the load flows are indicated.
+![pypowsybl_base_lf_network](figures/powsybl_base_load_flow_network.svg)
+*Figure 9 Simple AC loadflow with pypowsybl-Network*
+
+As we might be interested in how the load flow changes with different load values we can create "timesteps" by adding variants of the network and solving the power flow for these in sequence. The load is varied by adding a load variation to the load nodes. In figure 10 a sequence of five timesteps are shown where the load for the load nodes varies for each step. The change in power from the generator nodes is the corresponding solution to the power flow equations. Note that the power flow now is solved with distributed slack where all generators compensate for the mismatch according to a balance principle. This principle can be choosen as one of the following:
+- 'P_MAX' - distribute proportional to generator max power
+- 'P' - distribute proportional to current generator power
+- 'MARGIN' - distribute proportional to remaining generator margin
+- 'LOAD' - distribute on loads
+For the example the option P is choosen. 
+
+![pypowsybl_base_step_result](figures/powsybl_timestep_results.png)
+*Figure 10 Timestep AC loadflow with pypowsybl-Bus results*
+
+As shown in figure 10, the load for node 6 (VL6_0) increases from 100 to 125 MW from timestep 0 to timestep 1, and  a corresponding change in the power injected at node VL1 (G1), VL2 (G2) and VL3 (G3). As we choose proportional balance the larger generator at VL2 increases more in absoulte value, but by the same rate based on the generator power. Also the angles differences for generators are significant. 
+
+In figure 11 the power flow in three of the branches is shown.  Both the active power, reactive power and current is shown. For the flow from node 7 to 5 is changing significantly and the current is violating the current limit during timestep 1. For the flow from node 7 to 8 there is also a signifgicant change during the time steps but here the current limits are violated during all timesteps except the last. For the last branch the power flow is relatively low compared to the other two lines and the current limits are far from beeing violated in all timesteps.
+
+![pypowsybl_base_step_line_result](figures/powsybl_timestep_line_results_1.png)
+*Figure 11a Timestep AC loadflow with pypowsybl-Line results Node 7 to 5*
+![pypowsybl_base_step_line_result2](figures/powsybl_timestep_line_results_2.png)
+*Figure 11b Timestep AC loadflow with pypowsybl-Line results Node 7 to 8*
+![pypowsybl_base_step_line_result3](figures/powsybl_timestep_line_results_3.png)
+*Figure 11c Timestep AC loadflow with pypowsybl-Line results Node 5 to 1*
+
+We can manually adjust the setpoints for the generators to maintain the load flow so that no limits are violated and to improve the voltage angles, or we can use the optimal power flow techniques where the current limits are treated as constraints.
+ 
+### OPF for a 9-bus system with PowSyBl 
+To solve issues like the ones visualized in figure 10 (large angle differences) and figure 11 a and b (current limit violations) we can use the Open Remedial Action Optimizer. This optimizer includes optimizing Phase Shift Transformer (PST), HVDC and injection range actions. It is the injection range action that will be used in this example, where the generator injected power will be modeled as range actions.  We also need to define which network elements that must be monitored. These network elements are called Critical Network Element & Contingency (CNEC) in the configuration of the optimization. We define als the Remedial Action (RA) which are actions on the network performed to reduce constraints on CNECs. The following remedial actions may be configured:
+- Preventive Remedial Action(PRA): Remedial action performed on the N-state (i.e before any contingency)
+- Automatic Remedial Action (ARA): Remedial action triggered automatically without any human intervention after a contingency (also called SPS)
+- Curative Remedial Action (CRA): Remedial action performed by human activation after a contingency
+Both range actions are configured in as "Contingencies, Remedial Actions and other Constraints" (CRAC).
+
+The workflow of the openRAO is as shown in figure 12.
+![OpenRAO_workflow](figures/linear-rao-algo.png)
+*Figure 12 Open RAO linear Optimization workflow*
 
 
 ### Security Constrained Optimal Power Flow (SCOPF)
@@ -579,10 +629,12 @@ Chapter 8, 9, and 11 (34 pages)
 [4]:https://pypsa.readthedocs.io/en/latest/user-guide/power-flow.html
 10 pages
 
+
+
 Added reference:
 Das J.C., Load Flow Optimization and Optimal Power Flow.
-
-
+https://github.com/powsybl/pypowsybl/tree/main/docs/user_guide
+https://powsybl.readthedocs.io/projects/powsybl-open-loadflow/en/latest/
 ### Security Constrained Optimal Power Flow
 
 [5]:https://github.com/csiro-energy-systems/PowerModelsACDCsecurityconstrained.jl
