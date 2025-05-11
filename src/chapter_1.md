@@ -248,7 +248,7 @@ $$\overline{I_{ik}} = Y_{ik}^{se}(\overline{V_i}-\overline{V_k})+Y_{ik}^{sh}(\ov
 
 
 The power flowing through the branch (from i to k) can be found as:
-$$\overline{S_{ik}} = P_{ik}+jQ_{ik}= \overline{V_i}\space\overline{I_{ik}}^* = Y_{ik}^{se*}(\|V_i|^2-\overline{V_i}\space\overline{V_{k}}^{*})+Y_{ik}^{sh*}|V_k|^2\tag{numeq}$$
+\\[ \overline{S_{ik}} = P_{ik}+jQ_{ik}= \overline{V_i}\space\overline{I_{ik}}^* = Y_{ik}^{se*}(\|V_i|^2-\overline{V_i}\space\overline{V_{k}}^{*})+Y_{ik}^{sh*}|V_k|^2 \tag{numeq} \\]
 
 As an example of how the results may look a load flow using the IEEE 9-bus system can be used. 
 The below 9-bus network is simulated with varying loads as indicated:
@@ -605,9 +605,38 @@ To solve issues like the ones visualized in figure 10 (large angle differences) 
 - Curative Remedial Action (CRA): Remedial action performed by human activation after a contingency
 Both range actions are configured in as "Contingencies, Remedial Actions and other Constraints" (CRAC).
 
-The workflow of the openRAO is as shown in figure 12.
-![OpenRAO_workflow](figures/linear-rao-algo.png)
+The workflow of the linear optimization in openRAO is as shown in figure 12.
+![linear_RAO_workflow](figures/linear-rao-algo.png)
 *Figure 12 Open RAO linear Optimization workflow*
+
+In the sensitivity calculation performed initially what is called zone-to-zone sensitivity is analysed. This is better known as Power Transfer Distribution Factor (PTDFs) and is an expression of the change of flow in a specific line as a function of a change in the total power flow between two buses. Then an optimisation based on optimizing the sensitivities (or PTDFs) is performed, and a new sensitivity analysis checks that the sentsitivites has been improved according the objective. The optimization objective for this case is to maximize the minimum margin, i.e. to find the soluting that have the largest minimum margin. To make sure the solution that requires the least change in setpoints is choosen a "cost of changing setpoints" is added, so that the optimization penalizes change of setpoints with a cost.   
+
+#### Power Transfer Distribution Factor (PTDF)
+The Power Transfer Distribution Factor is way of calculating the change in powerflow through a branch as a ratio of the total power flow from one bus to another. By a linarization of the power flow equations where it is assumed that the volgate magnitudes are fixed, the angle differences between neighbour nodes are small and the the r/x ratio is small for all nodes, the flow through a line can  be approximated as a function of the phase angle difference.
+\\[P_{i,j}=P_{A,B}^{-1} \cdot(\theta_i-\theta_j)\\]
+where \\(P_{i,j}\\) is the power flow in line from node i to j, \\(P_{A,B}\\) is the total power flow from bus A to bus B, \\(\theta_i-\theta_j\\) is the angle difference between noe i and j. If the line from i to j is the only line connecting the bus A and B, then the power transfer distribution factor for changes in the power flow from busses at node i and j is 1. If there are more than one line connecting the two buses, then PTDF will be the ratio of the change in the total power flow from bus A to Bus B that is covered by line from i to j.
+
+#### Search three
+The optimization in Open RAO also includes a search three algorithm to performe the linera optimization for all the possible actions that are avaliable. In the search three algorithm the flow in a CNEC is 
+\\[F_i = F_{ref_{0,i}} + ( \sum_{j \in J} \Delta\alpha_j * S_{j,i}) + (\Delta F_i) \tag{numeq}\\]
+Where \\(F_i\\) is the power flow flow through branch \\(i\\), \\(F_{ref_{0,i}}\\) si the initial flow in the branch, \\(J\\) contains all the linear remedial actions, \\(S_{j,i}\\) is the sensitivity of the linear remedial action \\(j\\) (or PTDF) on the branch \\(i\\). \\(\Delta\alpha_j\\) is the change in setpoint for the linear remedial action, and \\(\Delta F_i\\) is hte impact of any non-linear remedial actions (such change in position of switches). The objective function is then:
+\\[min_i(\rho_i * (F_{max_i}-F_i))\\]
+Where \\(\rho_i\\) is 1 if at least one CNEC is overloaded or \\(\rho_i = \frac{1}{\sum_{ma}|PTDF_{ma,i}|}\\) if all margins are positive.
+
+The search three and optimization of linear remedial actions (and non linear if any) is in powsybl called **CASTOR** (**CA**lculation with **S**calable and **T**ransparent **O**ptimise**R**). An example of the workflow is shown in figure 13. The first step is defining the avaliable remedial actions from the CRAC file. The candidates for remedial actoins are created. Then the linear optimization is performed, and a security analyzis computes the value of the objective function (including load flow computation) for each of the candidates and compares the results to select the best candicate. The optimization stops when none of the candidates can increase the objective function more than a minimum requirement. When this happens the optimal application of remedial actions is considered to be found. 
+
+![CASTOR_workflow](figures/search-tree-algo-with-linear.jpg)
+*Figure 13 Search three with linear optimization workflow*
+
+#### OPF results with only preventive actions
+To perform the RAO on the network from the previous example we need to specify the avaliable remedial actions in the CRAC file. In our example a change in the setpoint for each of the generators separately is choosen as the remedial acting, more precisely as a injection range action. This is specified in the CRAC file as shown in figure 14. The setpoint from the previous load flow solution is used as a initial value and the range in which the generator can operate is set as min and max. The key is mainly used if there are more than one generator to make sure the setpoints adjustment are propotional between the two (or more) generators.
+
+![Injection_range](figures/InjectionRangeAction.png)
+*Figure 14 Definition of injectaion range action in CRAC*
+
+
+
+
 
 
 ### Security Constrained Optimal Power Flow (SCOPF)
@@ -635,6 +664,9 @@ Added reference:
 Das J.C., Load Flow Optimization and Optimal Power Flow.
 https://github.com/powsybl/pypowsybl/tree/main/docs/user_guide
 https://powsybl.readthedocs.io/projects/powsybl-open-loadflow/en/latest/
+
+[5] D. Šošić, I. Škokljev, og N. Pokimica, «Features of Power Transfer Distribution Coefficients in power System Networks».
+
 ### Security Constrained Optimal Power Flow
 
 [5]:https://github.com/csiro-energy-systems/PowerModelsACDCsecurityconstrained.jl
