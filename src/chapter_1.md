@@ -632,16 +632,84 @@ The search three and optimization of linear remedial actions (and non linear if 
 To perform the RAO on the network from the previous example we need to specify the avaliable remedial actions in the CRAC file. In our example a change in the setpoint for each of the generators separately is choosen as the remedial acting, more precisely as a injection range action. This is specified in the CRAC file as shown in figure 14. The setpoint from the previous load flow solution is used as a initial value and the range in which the generator can operate is set as min and max. The key is mainly used if there are more than one generator to make sure the setpoints adjustment are propotional between the two (or more) generators.
 
 ![Injection_range](figures/InjectionRangeAction.png)
-*Figure 14 Definition of injectaion range action in CRAC*
+*Figure 14 Definition of injection range action in CRAC*
 
+The CRAC file also must include the CNECs to monitor. This is defined as a flow CNEC and must include both the network element name for the CNEC and the limits. The state in which it can activated must also be defined. An examlpe of the definition for the line from node 7 to 8 is shown in figure 15.
 
+![flowCNEC](figures/flowCNEC_def.png)
 
+*Figure 15 Definition of flowCNECs in CRAC*
 
+When running the optimization with the same network and load oscillations the optimization performs the steps with the results as shown in figure 16.
+
+![OpenRAO_workflow_example](figures/OpenRAO_workflow_9busexample.png)
+*Figure 16 Workflow and results from 9-bus example*
+
+In figure 17. the lineflow through line 7-8 is shown before and after optimization
+
+![OpenRAO_9-bus_lineresults](figures/OpenRAO_lineresult_9busexample.png)
+*Figure 17 Lineflow results for line 7-8 from 9-bus example*
+
+#### Summary of Optimization Steps
+
+**Initial State** 
+Load flow identified Line 7-5 as overloaded with margin = -0.02 MW; optimization adjusted Generator 1 (125 MW) and Generator 3 (104 MW), improving Line 7-5 margin to 13.36 MW with cost improvement from 0.02 to -13.36.
+
+**First timestep (ts_0)** 
+
+Initial analysis shows Line 7-8 as overloaded with margin = -7.71 MW. Optimization adjustes Generator 1 (125 MW) and Generator 3 (131 MW), improving cost from 7.71 to -18.82 with final margin on Line 7-5 at 18.82 MW.
+
+**Second timestep (ts_1)** 
+
+Line 7-8 overloaded with margin = -14.51 MW and Line 7-5 with margin = -5.29 MW. Optimization adjusts Generator 2 (123 MW) and Generator 3 (126 MW), resolving constraints with margins of 20.31 MW for Line 6-4 and 20.44 MW for Line 9-6.
+
+**Third timestep (ts_2)**
+
+Line 7-8 severely overloaded with margin = -35.23 MW. Optimization adjusts Generator 2 (127 MW) and Generator 3 (149 MW), resolving constraints with margins of 1.56 MW for Line 9-8 and 7.63 MW for Line 7-8.
+
+**Fourth timestep (ts_3)** 
+
+Line 7-8 overloaded with margin = -3.27 MW. Optimization adjusts Generator 1 (106 MW) and Generator 3 (126 MW), resolving constraints with margins of 19.26 MW for Line 9-6 and 19.44 MW for Line 7-8.
+
+**Last timestep (ts_4)**
+
+Load flow calculation was initiated with network balance of 319.64 MW generation and 220.5 MW load and no overloads. Generator outputs were rescaled to match loads. (Generator 1: 71.64 MW → 57.31 MW, Generator 2: 163.0 MW → 130.4 MW, Generator 3: 85.0 MW → 68.0 MW). 
+
+The optimization successfully resolved network constraints at each timestep by adjusting generator outputs appropriately, demonstrating the effectiveness of the remedial action optimization process.
 
 
 ### Security Constrained Optimal Power Flow (SCOPF)
-Specifics on OPF with security constraints
+In the security constrainted OPF the optimal power flow process is extended with also considering contingencies.
+In principle the optimization process is similar, but because the contingencies adds more constraints and increases the number of scenarios it is far more computationally complex than OPF without constraints. 
 
+While Optimal Power Flow (OPF) is an optimization problem aimed at finding the best operating point for a power system, typically to minimize generation cost. It involves constraints such as nodal and global power balances, limits on generator output (upper and lower bounds), and physical network constraints, specifically thermal line flow limits for the base case (pre-contingency) to avoid breaching limits as in the previous example.
+
+Security-Constrained Optimal Power Flow (SCOPF) is an extension of the OPF problem that explicitly incorporates security considerations, particularly in the co   ntext of contingency scenarios. SCOPF determines dispatch decisions that are "contingency aware". The key difference is that SCOPF enforces that no line is overloaded due to the resulting power flow not only for the base case but also *for every considered contingency scenario*.
+
+The principal similarities and differences:
+
+**Principal Similarities:**
+
+*   **Optimization Problem:** Both OPF and SCOPF are mathematical optimization problems.
+*   **Objective Function:** The objective function often involves minimizing the cost of generation.
+*   **Base Constraints:** Both include constraints related to power balance (nodal and global) and limits on active power output of generators.
+*   **Physical Network Representation:** Both rely on a representation of the physical network, such as using DC power flow approximation and Power Transfer Distribution Factors (PTDFs) to relate nodal injections to line flows.
+*   **Feasible Region:** Both define a feasible region for nodal injections based on network capacity and constraints.
+
+**Principal Differences:**
+
+*   **Contingency Awareness:** This is the defining difference. **SCOPF explicitly includes constraints for contingency scenarios** (unplanned outages, typically of lines or generators) in addition to the base case. Standard OPF, as described in the context of SCOPF, might only consider the base case.
+*   **Constraint Set Size:** SCOPF problems are much larger and more complex due to the inclusion of constraints for each contingency scenario. For example, considering N-1 contingencies (single line outages) in a system with L lines requires adding 2L linear inequalities for each of the L potential outages, leading to a large number of constraints.
+*   **Feasible Region Definition:** The feasible region in SCOPF is defined by the constraints from the base case *and* all considered contingency cases, ensuring that operations remain secure even after an outage.
+*   **Computational Complexity:** SCOPF is significantly more computationally challenging than a base-case OPF due to its high dimensionality. Solving SCOPF for real-world systems or multiple time periods (e.g., in electricity market analysis) can lead to impractical computational requirements.
+*   **Purpose:** While OPF finds an optimal state for current conditions, **SCOPF finds an optimal state (a preventive dispatch) that is secure against a defined set of potential contingencies**. This is crucial for ensuring system reliability and is applied in contexts like flow-based market coupling.
+
+The inclusion of security constraints in SCOPF is what makes it computationally challenging, and techniques like redundancy screening and impact screening are proposed to reduce the number of these constraints to make the problem solvable in practice.
+
+#### SCOPF Example with Open RAO and Powsybl
+
+![OpenRAO_9-bus_workflow_contingency](figures/OpenRAO_contingency_workflow_9busexample.png)
+*Figure 18 Workflow and results from 9-bus example*
 
 ## References
 ### Basic Power Flow
