@@ -150,7 +150,7 @@ g(x^0,y^0)+\frac{\partial(g(x^0,y^0))}{\partial x}(x-x^0) + \frac{\partial g(x^0
 $$
 $$
 \begin{bmatrix}
-\frac{\partial(f(x^0,y^0))}{\partial x}&\frac{f(x^0,y^0)}{\partial y}\\\\
+\frac{\partial(f(x^0,y^0))}{\partial x}&\frac{\partial f(x^0,y^0)}{\partial y}\\\\
 \frac{\partial(g(x^0,y^0))}{\partial x}&\frac{\partial g(x^0,y^0)}{\partial y}\\\\
 \end{bmatrix}
 \begin{bmatrix}
@@ -271,11 +271,11 @@ The reactive power in the loads also varies but in a different pattern, so that 
 As the P and Q in loads are varying with the same pattern it is not obvious wether the angle and magnitudes change as a result of changes in P or Q, 
 but if we investigate the equations 36 to 44 we may observe that the changes in P and Q related to V and $ \theta$ are dependent on the sine and cosine of the angle between two nodes, multiplied by the G and B of the admittance.
 If we assume that the difference in angles are relatively small the sine term is relatively small and can for the purpose of understanding the relation be neglected, while the the cosine term is relatively large and may be concidered $ \approx 1 $ for the purpose of understanding the relation. 
-For the P and $ \theta$ relation is dependent on the cosine multiplied with the B from (20) which is related to the reactance portion of the impedance which is significant for large $\frac{R}{X}$ ratios typically found in distribution grids
-The P and V relation is dependent on the cosine multiplied by G from (20) which is related to the resistance part of the impedance, which again is relatively low for large $\frac{R}{X}$ ratios.
+For the P and $ \theta$ relation is dependent on the cosine multiplied with the B from (20) which is related to the reactance portion of the impedance which is significant for large $\frac{X}{R}$ ratios typically found in distribution grids
+The P and V relation is dependent on the cosine multiplied by G from (20) which is related to the resistance part of the impedance, which again is relatively low for large $\frac{X}{R}$ ratios.
 
 Similarly the Q and $ \theta$ relation and Q and V relation are oposite, cosine is multiplied with G (related to resistance part of impedance) for the $\frac{\partial Q}{\partial V}$ relation and with B (related to reactance part of impedance) for the $\frac{\partial Q}{\partial \theta}$ relation.
-Thus we should expect, given a large $\frac{R}{X}$ that the $\frac{\partial P}{\partial \theta}$ and $\frac{\partial Q}{\partial V}$ have a larger impact than the $\frac{\partial Q}{\partial \theta}$ and $\frac{\partial P}{\partial V}$
+Thus we should expect, given a large $\frac{X}{R}$ that the $\frac{\partial P}{\partial \theta}$ and $\frac{\partial Q}{\partial V}$ are larger relative to the $\frac{\partial Q}{\partial \theta}$ and $\frac{\partial P}{\partial V}$
 
 If we re-run the simluations with Q and P varying separately from eachother we may observe this relation more clearly as shown in figure 4 below.
 ![Figure 4: Busresults_indep_P_and_Q](figures/bus_results_independent_P_and_Q.png)
